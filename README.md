@@ -298,3 +298,7 @@ Since the MEA Real Recordings are proprietary, we provide a statistically-matche
 ```bash
 cd data/synthetic_mea
 python synthetic_mea_generator.py
+
+# Create exact environment used in paper
+conda env create -f environment.yml
+conda activate cnn-bilstm-spike-sorting

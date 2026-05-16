@@ -307,3 +307,10 @@ conda activate cnn-bilstm-spike-sorting
 Build the exact environment used in the paper:
 ```bash
 docker build -t cnn-bilstm:v1.0 .
+## Pre-trained Weights (NEW)
+
+Download pre-trained models to skip training:
+```bash
+# Download from GitHub Releases
+wget https://github.com/falmukhtar-eng/Real-time-Neural-Spike-Sorting/releases/download/v1.0.0/pretrained_models.zip
+unzip pretrained_models.zip -d models/pretrained/

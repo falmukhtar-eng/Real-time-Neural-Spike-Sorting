@@ -318,3 +318,17 @@ unzip pretrained_models.zip -d models/pretrained/
 
 ```bash
 python reproduce_paper.py
+## Benchmark Comparison (NEW)
+
+### SpikeForest Benchmark
+To compare with Kilosort3, YASS, and other methods on standard benchmarks:
+
+```bash
+# Install SpikeForest tools
+pip install spikeforest
+
+# Run on any SpikeForest dataset
+python benchmarks/spikeforest_wrapper.py \
+    --recording path/to/recording.npy \
+    --model-weights models/pretrained/quiroga_full_supervision.h5 \
+    --output results/spikeforest_sorting/

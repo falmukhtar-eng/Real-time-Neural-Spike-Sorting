@@ -302,3 +302,8 @@ python synthetic_mea_generator.py
 # Create exact environment used in paper
 conda env create -f environment.yml
 conda activate cnn-bilstm-spike-sorting
+## Docker (Recommended for Reproduction)
+
+Build the exact environment used in the paper:
+```bash
+docker build -t cnn-bilstm:v1.0 .

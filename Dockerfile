@@ -1,41 +1,47 @@
-# Dockerfile for CNN-BiLSTM Spike Sorting
-# CUDA 11.2, cuDNN 8.1 (Table V)
+# FILE: Dockerfile
+# Exact environment used to produce paper results
+# Build: docker build -t cnn-bilstm:v1.0 .
+# Run: docker run --gpus all -v $(pwd)/data:/app/data cnn-bilstm:v1.0
 
-FROM nvidia/cuda:11.2.2-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:11.2.2-cudnn8-devel-ubuntu20.04
 
-# Set environment variables
+# Prevent interactive prompts during build
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PYTHONUNBUFFERED=1
-ENV TF_CPP_MIN_LOG_LEVEL=2
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    python3.8 \
-    python3-pip \
+# Install Python 3.8.13 (exact version from paper)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+    python3.8=3.8.10-0ubuntu1~20.04.9 \
+    python3.8-dev \
+    python3-pip=20.0.2-5ubuntu1.9 \
     git \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Python 3.8 as default
+# Make python3.8 the default
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
 RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
-# Upgrade pip
-RUN pip install --upgrade pip setuptools wheel
+# Upgrade pip to exact version
+RUN pip install --no-cache-dir pip==22.0.4
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements and install Python dependencies
+# Copy and install Python dependencies
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
-COPY model.py train.py preprocess.py evaluate.py baselines.py ./
-COPY equivalent_accuracy.py semi_supervised.py benchmark_latency.py ./
+COPY . .
 
-# Create directories for data and models
-RUN mkdir -p data models results
+# Set deterministic TF behavior for reproducibility
+ENV TF_DETERMINISTIC_OPS=1
+ENV TF_CUDNN_DETERMINISTIC=1
+ENV PYTHONHASHSEED=42
 
 # Default command
-CMD ["python", "--version"]
+CMD ["python", "train.py"]

@@ -314,3 +314,7 @@ Download pre-trained models to skip training:
 # Download from GitHub Releases
 wget https://github.com/falmukhtar-eng/Real-time-Neural-Spike-Sorting/releases/download/v1.0.0/pretrained_models.zip
 unzip pretrained_models.zip -d models/pretrained/
+## One-Command Reproduction (NEW)
+
+```bash
+python reproduce_paper.py

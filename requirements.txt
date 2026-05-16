@@ -1,0 +1,24 @@
+# Core dependencies for CNN-BiLSTM spike sorting
+# TensorFlow 2.8 with CUDA 11.2, cuDNN 8.1 (Table V)
+tensorflow==2.8.0
+
+# Scientific computing
+numpy==1.21.0
+scipy==1.7.0
+
+# Machine learning utilities
+scikit-learn==1.0.2
+
+# Visualization
+matplotlib==3.5.0
+
+# Baseline models
+xgboost==1.5.0
+
+# Optional: For advanced statistical validation
+# pymc3==3.11.0  # For full Bayesian MCMC (Section III.D.5)
+# arviz==0.11.0  # For Bayesian visualization
+
+# Development tools
+pytest==7.0.0
+black==22.1.0

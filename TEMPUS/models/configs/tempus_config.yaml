@@ -1,0 +1,51 @@
+# TEMPUS Configuration File
+
+model:
+  num_classes: 12
+  pca_dim: 47
+  lstm_units: 128
+  lstm_layers: 2
+  cnn_filters: [64, 128, 256]
+  kernel_size: 3
+  attention_window: 16
+  attention_sensitivity: 0.5
+  reference_rate: 50.0
+  prior_strength: 1.0
+
+training:
+  learning_rate: 0.001
+  optimizer: adam
+  gradient_clip_norm: 1.0
+
+loss:
+  pcl_weight: 1.0
+  tcr_weight: 0.5
+  entropy_weight: 0.1
+  
+  # PCL parameters
+  pcl:
+    lambda_peak: 10.0
+    lambda_width: 5.0
+    lambda_slope: 5.0
+    lambda_ref: 10.0
+  
+  # TCR parameters
+  tcr:
+    refractory_ms: 2.0
+    burst_ms: 10.0
+    margin: 1.0
+    temperature: 0.5
+
+data:
+  sampling_rate: 24000
+  waveform_samples: 200
+  pre_samples: 100
+  post_samples: 100
+  bandpass_low: 300
+  bandpass_high: 3000
+  threshold_k: 4.5
+
+evaluation:
+  confidence_threshold: 0.9
+  mc_samples: 50
+  batch_size: 32

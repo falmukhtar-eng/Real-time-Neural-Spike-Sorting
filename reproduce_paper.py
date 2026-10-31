@@ -11,7 +11,6 @@ Tables VIII and IX are not covered (their scripts are not in this repository).
 """
 
 import json
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -44,17 +43,6 @@ def run_command(cmd, description):
     return True
 
 
-def rename_preprocessed():
-    """preprocess.py writes dataset_preprocessed.npz; train.py expects quiroga_preprocessed.npz."""
-    src = DATA_DIR / "dataset_preprocessed.npz"
-    dst = DATA_DIR / "quiroga_preprocessed.npz"
-    if not src.exists():
-        print(f"ERROR: {src} not found")
-        return False
-    shutil.copyfile(src, dst)
-    return True
-
-
 def main():
     if not RAW_DATA.exists():
         print(f"ERROR: raw data not found at {RAW_DATA}")
@@ -64,15 +52,13 @@ def main():
         ("Check dependencies",
          "python -c \"import tensorflow as tf; print(tf.__version__)\""),
         ("Preprocess Quiroga data",
-         f"python preprocess.py --input {RAW_DATA} --output-dir {DATA_DIR}"),
+         f"python preprocess.py --input {RAW_DATA} --output-dir {DATA_DIR} "
+         f"--dataset-name quiroga"),
     ]
     for desc, cmd in steps:
         if not run_command(cmd, desc):
             print(f"\nREPRODUCTION FAILED at step: {desc}")
             sys.exit(1)
-
-    if not rename_preprocessed():
-        sys.exit(1)
 
     data_file = DATA_DIR / "quiroga_preprocessed.npz"
     steps = [

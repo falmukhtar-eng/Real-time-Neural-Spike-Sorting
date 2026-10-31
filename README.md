@@ -64,15 +64,10 @@ Requirements:
 python preprocess.py \
   --input data/raw/quiroga_dataset.npy \
   --output-dir data/quiroga \
+  --dataset-name quiroga \
   --sampling-rate 24000 \
   --pca-variance 0.952 \
   --k-threshold 4.5
-```
-
-`preprocess.py` writes `data/quiroga/dataset_preprocessed.npz`, while `train.py` looks for `<dataset>_preprocessed.npz`. Rename the file before training:
-
-```bash
-mv data/quiroga/dataset_preprocessed.npz data/quiroga/quiroga_preprocessed.npz
 ```
 
 This step implements:
@@ -374,4 +369,4 @@ From Section VI.B of the paper:
 
 ## Contact
 
-For questions about the code, please open an issue on GitHub. For questions about the paper, contact firas.almukhtar@cue.edu.krd
+For questions about the code, please open an issue on GitHub. For questions about the paper, contact f.almukhtar@cue.edu.krd

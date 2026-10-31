@@ -364,11 +364,11 @@ From Section VI.B of the paper:
 ## Citation
 
 ```bibtex
-@misc{almukhtar2026cnn,
-  title  = {Real-time Neural Spike Sorting and Morphology Forecasting Using Hybrid CNN-BiLSTM Architectures for Brain-Computer Interface Applications},
-  author = {Almukhtar, Firas},
-  year   = {2026},
-  howpublished = {\url{https://github.com/falmukhtar-eng/Real-time-Neural-Spike-Sorting}}
+@article{almukhtar2026cnn,
+  title   = {Real-time Neural Spike Sorting and Morphology Forecasting Using Hybrid CNN-BiLSTM Architectures for Brain-Computer Interface Applications},
+  author  = {Almukhtar, Firas},
+  journal = {Applied Computational Intelligence and Soft Computing},
+  year    = {2026}
 }
 ```
 

@@ -1,22 +1,28 @@
-```markdown
 # Pre-trained Model Weights
 
-## CNN-BiLSTM Quiroga Full Supervision
-- **File:** `quiroga_full_supervision.h5`
-- **Size:** ~3.8 MB
-- **Training Date:** 2024-11-15
-- **Hardware:** NVIDIA RTX 3090, Driver 510.47.03
-- **Software:** TensorFlow 2.8.0, CUDA 11.2.2, cuDNN 8.1.1
-- **Dataset:** Quiroga et al. 2004 (4 neurons, ~10,000 spikes)
-- **Random Seed:** 42
+**Status: no pre-trained weights are currently published in this repository or in a GitHub release.**
+Scripts that reference `models/pretrained/quiroga_full_supervision.h5` expect a file that is not available; train your own weights with `train.py` instead.
 
-### Verified Performance
-Run `python evaluate.py --model-weights models/pretrained/quiroga_full_supervision.h5` to verify:
-- Accuracy: 0.964 [0.962, 0.967]
-- Precision: 0.948 [0.945, 0.952]
-- Latency (RTX 3090): 45.2 ms amortized / 52.1 ms single-spike
+## Planned artifact: CNN-BiLSTM, Quiroga, full supervision
 
-### Limitations
+- **File:** `quiroga_full_supervision.h5` (not yet released)
+- **Dataset:** Quiroga et al. 2004
+- **Training date:** 2024-11-15
+- **Random seed:** 42
+- **Software:** TensorFlow 2.8.0, CUDA 11.2.2, cuDNN 8.1.1 (see `requirements.txt`)
+
+Performance figures will be added to this card only after the weights are published and the numbers have been re-verified against the released file.
+
+## Reproducing results without pre-trained weights
+
+```bash
+python train.py --dataset quiroga --num-classes 6 --model-dir models/quiroga --data-dir data/quiroga
+python evaluate.py --model-weights models/quiroga/best_model_quiroga.h5 \
+  --test-data data/quiroga/quiroga_preprocessed.npz --num-classes 6
+```
+
+## Known limitations
+
 - Validated only on rodent cortical data
 - Performance degrades on hippocampal/primate data without fine-tuning
-- Requires GPU with >= 10GB VRAM
+- Requires a GPU for practical latency

@@ -227,7 +227,8 @@ def preprocess_dataset(
     test_ratio=0.2,
     pca_variance=0.952,
     k_threshold=4.5,
-    output_dir='data'
+    output_dir='data',
+    dataset_name='dataset'
 ):
     """
     Complete preprocessing pipeline for a dataset.
@@ -357,7 +358,6 @@ def preprocess_dataset(
     y_morph_test = np.vstack([X_test_pca[1:], np.zeros_like(X_test_pca[0])])
 
     # Save preprocessed data
-    dataset_name = 'dataset'
     save_path = os.path.join(output_dir, f'{dataset_name}_preprocessed.npz')
 
     save_dict = {
@@ -425,6 +425,8 @@ def main():
                         help='Sampling rate in Hz')
     parser.add_argument('--pca-variance', type=float, default=0.952,
                         help='PCA variance to retain (0.952 = 95.2%)')
+    parser.add_argument('--dataset-name', type=str, default='dataset',
+                        help='Prefix of the output file, e.g. quiroga -> quiroga_preprocessed.npz')
     parser.add_argument('--k-threshold', type=float, default=4.5,
                         help='Adaptive threshold sensitivity constant')
 
@@ -442,7 +444,8 @@ def main():
         sampling_rate=args.sampling_rate,
         pca_variance=args.pca_variance,
         k_threshold=args.k_threshold,
-        output_dir=args.output_dir
+        output_dir=args.output_dir,
+        dataset_name=args.dataset_name
     )
 
     print("\nPreprocessing complete!")

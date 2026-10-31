@@ -1,6 +1,6 @@
 # FILE: requirements.txt
 # EXACT pinned versions used to produce paper results
-# Generated: 2024-03-15
+# Generated: 2024-11-15
 # Hardware: NVIDIA RTX 3090, Driver 510.47.03, CUDA 11.2.2, cuDNN 8.1.1
 
 tensorflow==2.8.0

@@ -4,7 +4,7 @@
 ## CNN-BiLSTM Quiroga Full Supervision
 - **File:** `quiroga_full_supervision.h5`
 - **Size:** ~3.8 MB
-- **Training Date:** 2024-03-15
+- **Training Date:** 2024-11-15
 - **Hardware:** NVIDIA RTX 3090, Driver 510.47.03
 - **Software:** TensorFlow 2.8.0, CUDA 11.2.2, cuDNN 8.1.1
 - **Dataset:** Quiroga et al. 2004 (4 neurons, ~10,000 spikes)

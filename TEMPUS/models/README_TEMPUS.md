@@ -15,5 +15,6 @@ innovations**:
 
 ```bash
 git clone https://github.com/falmukhtar-eng/Real-time-Neural-Spike-Sorting.git
-cd Real-time-Neural-Spike-Sorting/TEMPUS
+cd Real-time-Neural-Spike-Sorting
 pip install -r requirements.txt
+```

@@ -433,6 +433,27 @@ def evaluate_model(
     return results
 
 
+
+SEQUENCE_LENGTH = 16
+
+
+def build_sequences(X, seq_len=SEQUENCE_LENGTH):
+    """Turn flat PCA features (N, D) into overlapping sequences (N, seq_len, D).
+
+    Identical to the sequence construction used in train.py: the sequence for
+    spike i holds spikes i-seq_len+1 ... i, with zero left-padding at the start.
+    """
+    X = np.asarray(X)
+    n = len(X)
+    out = np.zeros((n, seq_len, X.shape[1]), dtype=X.dtype)
+    for i in range(n):
+        for j in range(seq_len):
+            idx = i - (seq_len - 1 - j)
+            if idx >= 0:
+                out[i, j] = X[idx]
+    return out
+
+
 def main():
     parser = argparse.ArgumentParser(description='Evaluate CNN-BiLSTM model')
     parser.add_argument('--model-weights', type=str, required=True,
@@ -457,15 +478,21 @@ def main():
     X_test = data['X_test']
     y_class_test = data['y_class_test']
 
+    # preprocess.py saves flat PCA features (N, D); the model expects
+    # sequences (N, 16, D), built here the same way train.py builds them.
+    if X_test.ndim == 2:
+        X_test = build_sequences(X_test, SEQUENCE_LENGTH)
+    num_pca_components = X_test.shape[-1]
+
     # Build model
     model = CNNBiLSTMSpikeSorter(
         num_classes=args.num_classes,
-        num_pca_components=X_test.shape[1],
-        sequence_length=16
+        num_pca_components=num_pca_components,
+        sequence_length=SEQUENCE_LENGTH
     )
 
     # Build by calling once
-    dummy_input = tf.zeros((1, 16, X_test.shape[1]))
+    dummy_input = tf.zeros((1, SEQUENCE_LENGTH, num_pca_components))
     _ = model(dummy_input, training=False)
 
     # Load weights

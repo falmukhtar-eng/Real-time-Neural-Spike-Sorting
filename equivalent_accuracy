@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""
+equivalent_accuracy.py
+Metrics used to compare supervised classifiers with unsupervised sorters.
+
+equivalent_accuracy  (Equation 14 of the paper)
+    (1/N) * sum_i  max_j |g_i ∩ c_j| / |g_i|
+    g_i = spikes of ground-truth neuron i (N neurons), c_j = spikes assigned to
+    cluster j. This is the MEAN PER-NEURON BEST-CLUSTER RECALL. Several neurons
+    may share one cluster, so merge errors are NOT penalised (a lenient ceiling).
+
+raw_accuracy
+    Fraction of all spikes labelled correctly (spike-level, micro-average).
+    Needs labels that already share the ground-truth label set.
+
+one_to_one_accuracy
+    Spike-level accuracy after the best ONE-TO-ONE cluster-to-neuron matching
+    (Hungarian algorithm). Penalises merged neurons and extra (phantom) clusters.
+
+Relations:
+  * For a supervised classifier whose classes ARE the neuron labels, the matching
+    of each neuron to its own class gives the macro-averaged recall (balanced
+    accuracy). Equation 14 picks each neuron's BEST cluster, so it is always
+    >= macro recall, with equality when every neuron's best cluster is its own
+    class. (A classifier that predicts one class for everything scores 1.0.)
+  * Neither equals raw accuracy unless all per-neuron recalls are equal
+    (e.g. balanced classes). Do not treat them as interchangeable.
+
+Usage:
+  python equivalent_accuracy.py --predictions results/<dataset>/predictions.npz
+  (the .npz holds y_true and y_pred; y_pred may be cluster ids for unsupervised sorters)
+"""
+import argparse
+import numpy as np
+from scipy.optimize import linear_sum_assignment
+
+
+def raw_accuracy(y_true, y_pred):
+    y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
+    return float(np.mean(y_true == y_pred))
+
+
+def equivalent_accuracy(y_true, y_cluster):
+    y_true, y_cluster = np.asarray(y_true), np.asarray(y_cluster)
+    recalls = []
+    for g in np.unique(y_true):
+        in_g = y_true == g
+        _, counts = np.unique(y_cluster[in_g], return_counts=True)
+        recalls.append(counts.max() / in_g.sum())
+    return float(np.mean(recalls))
+
+
+def one_to_one_accuracy(y_true, y_cluster):
+    y_true, y_cluster = np.asarray(y_true), np.asarray(y_cluster)
+    g_ids, c_ids = np.unique(y_true), np.unique(y_cluster)
+    overlap = np.array([[np.sum((y_true == g) & (y_cluster == c)) for c in c_ids] for g in g_ids])
+    rows, cols = linear_sum_assignment(-overlap)
+    return float(overlap[rows, cols].sum() / len(y_true))
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--predictions", required=True, help=".npz with y_true and y_pred")
+    a = ap.parse_args()
+    d = np.load(a.predictions)
+    yt, yp = d["y_true"], d["y_pred"]
+    print(f"spikes: {len(yt)}  neurons: {len(np.unique(yt))}  clusters/classes: {len(np.unique(yp))}")
+    print(f"raw accuracy (spike-level):             {raw_accuracy(yt, yp):.4f}")
+    print(f"equivalent accuracy (Equation 14):      {equivalent_accuracy(yt, yp):.4f}")
+    print(f"one-to-one accuracy (strict, Hungarian): {one_to_one_accuracy(yt, yp):.4f}")

@@ -22,6 +22,7 @@ import os
 import argparse
 
 from model import CNNBiLSTMSpikeSorter
+from equivalent_accuracy import equivalent_accuracy, one_to_one_accuracy
 
 
 def compute_expected_calibration_error(y_true, y_prob, n_bins=10):
@@ -331,16 +332,28 @@ def evaluate_model(
     precision = precision_score(y_class_test, y_pred, average='macro', zero_division=0)
     recall = recall_score(y_class_test, y_pred, average='macro', zero_division=0)
 
+    # Equation 14 (mean per-neuron best-cluster recall) and the strict one-to-one variant.
+    # For a supervised classifier Equation 14 equals macro recall; it differs from raw
+    # accuracy whenever per-class recalls differ (e.g. imbalanced classes).
+    equiv_acc = equivalent_accuracy(y_class_test, y_pred)
+    one_to_one = one_to_one_accuracy(y_class_test, y_pred)
+
     print(f"\nBasic Metrics:")
-    print(f"  Accuracy:  {accuracy:.4f}")
-    print(f"  Precision: {precision:.4f}")
-    print(f"  Recall:    {recall:.4f}")
+    print(f"  Accuracy (raw, spike-level):        {accuracy:.4f}")
+    print(f"  Precision (macro):                  {precision:.4f}")
+    print(f"  Recall (macro):                     {recall:.4f}")
+    print(f"  Equivalent accuracy (Equation 14):  {equiv_acc:.4f}")
+    print(f"  One-to-one accuracy (strict):       {one_to_one:.4f}")
 
     results = {
         'accuracy': {'point': accuracy},
         'precision': {'point': precision},
-        'recall': {'point': recall}
+        'recall': {'point': recall},
+        'equivalent_accuracy': {'point': equiv_acc},
+        'one_to_one_accuracy': {'point': one_to_one}
     }
+    np.savez(os.path.join(output_dir, 'predictions.npz'),
+             y_true=np.asarray(y_class_test), y_pred=np.asarray(y_pred))
 
     # BCa Bootstrap Confidence Intervals (Section III.D.5)
     if compute_bootstrap:
@@ -365,6 +378,13 @@ def evaluate_model(
             stratify_by=y_class_test
         )
 
+        equiv_bca = bca_bootstrap(
+            y_class_test, y_pred,
+            metric_func=equivalent_accuracy,
+            n_bootstrap=n_bootstrap,
+            stratify_by=y_class_test
+        )
+        results['equivalent_accuracy'].update(equiv_bca)
         results['accuracy'].update(acc_bca)
         results['precision'].update(prec_bca)
         results['recall'].update(rec_bca)
